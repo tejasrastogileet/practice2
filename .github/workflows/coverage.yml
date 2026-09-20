@@ -26,12 +26,12 @@ jobs:
       - name: Run tests with coverage
         run: |
           set +e
-          PYTHONPATH=. python -m pytest --cov=src --cov-report=term-missing --cov-report=markdown:coverage.md --cov-fail-under=85
-          status=$?
-          if [ -f coverage.md ]; then
-            {
-              echo '## Coverage report'
-              cat coverage.md
-            } >> "$GITHUB_STEP_SUMMARY"
-          fi
+          PYTHONPATH=. python -m pytest --cov=src --cov-report=term-missing --cov-fail-under=85 2>&1 | tee coverage-output.txt
+          status=${PIPESTATUS[0]}
+          {
+            echo '## Coverage report'
+            echo '```text'
+            cat coverage-output.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
           exit "$status"
